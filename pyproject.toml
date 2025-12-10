@@ -1,0 +1,112 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dbhydro-py"
+version = "0.0.1"
+description = "Python client for the DBHydro API"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "James Dolinar", email = "jdolinar@aquaveo.com"},
+]
+keywords = ["dbhydro", "api", "water", "data", "south florida"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "requests>=2.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Aquaveo/dbhydro-py"
+Repository = "https://github.com/Aquaveo/dbhydro-py"
+Documentation = "https://github.com/Aquaveo/dbhydro-py#readme"
+Issues = "https://github.com/Aquaveo/dbhydro-py/issues"
+
+[project.optional-dependencies]
+# Optional dependency for DataFrame functionality
+pandas = ["pandas>=1.3.0"]
+
+# Development dependencies
+dev = [
+    "pytest>=6.0",
+    "pytest-cov>=3.0",
+    "mypy>=0.991",
+]
+
+# All optional dependencies combined
+all = ["dbhydro-py[pandas]"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dbhydro_py*"]
+
+[tool.setuptools.package-dir]
+"" = "."
+
+# Pytest configuration
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["dbhydro_py"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/.*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+# MyPy type checking configuration
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pandas",
+    "pandas.*",
+]
+ignore_missing_imports = true
