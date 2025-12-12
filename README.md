@@ -38,12 +38,13 @@ pip install dbhydro-py[dev]
 
 ## Quick Start
 
+### Simple Setup (Recommended)
+
 ```python
-from dbhydro_py import DbHydroApi, RestAdapterRequests
+from dbhydro_py import DbHydroApi
 
 # Initialize the API client
-client = DbHydroApi(
-    rest_adapter=RestAdapterRequests(),
+client = DbHydroApi.with_default_adapter(
     client_id="your_client_id",
     client_secret="your_client_secret"
 )
@@ -64,6 +65,24 @@ for ts in response.time_series:
 # Convert to DataFrame (requires pandas)
 df = response.to_dataframe()
 print(df.head())
+```
+
+### Custom REST Adapter
+
+If you need to customize the HTTP client behavior:
+
+```python
+from dbhydro_py import DbHydroApi, RestAdapterRequests
+
+# Initialize with custom adapter
+client = DbHydroApi(
+    rest_adapter=RestAdapterRequests(),
+    client_id="your_client_id",
+    client_secret="your_client_secret"
+)
+
+# Usage is identical to the simple setup
+response = client.get_time_series(site_ids=['S79-E'], ...)
 ```
 
 ## API Credentials
