@@ -14,6 +14,25 @@ from dbhydro_py.utils import dataclass_from_dict
 
 
 class DbHydroApi:
+    """Client for interacting with the South Florida Water Management District's DBHydro API.
+    
+    Provides methods to retrieve time series data, real-time monitoring data, and other
+    hydrological information from the DBHydro database.
+    
+    Args:
+        rest_adapter (RestAdapterBase): HTTP client adapter for making API requests.
+        client_id (str): API client ID for authentication.
+        client_secret (str): API client secret for authentication.
+        api_version (int, optional): API version to use. Defaults to 1.
+    
+    Examples:
+        >>> # Using custom adapter
+        >>> api = DbHydroApi(custom_adapter, "client_id", "secret")
+        >>> 
+        >>> # Using default adapter (recommended)
+        >>> api = DbHydroApi.with_default_adapter("client_id", "secret")
+    """
+    
     def __init__(self, rest_adapter: RestAdapterBase, client_id: str, client_secret: str, api_version: int = 1):
         self.rest_adapter = rest_adapter
         self._client_secret = client_secret
