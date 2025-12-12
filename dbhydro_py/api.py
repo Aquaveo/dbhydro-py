@@ -21,6 +21,21 @@ class DbHydroApi:
         
         self.base_url = f'https://dataservice-proxy.api.sfwmd.gov/v{api_version}/ext/data/'
      
+    @classmethod
+    def with_default_adapter(cls, client_id: str, client_secret: str, api_version: int = 1) -> 'DbHydroApi':
+        """Create a DbHydroApi instance with the default RestAdapterRequests adapter.
+        
+        Args:
+            client_id (str): The client ID for authentication.
+            client_secret (str): The client secret for authentication.
+            api_version (int, optional): The API version to use. Defaults to 1.
+        
+        Returns:
+            DbHydroApi: A new instance of DbHydroApi using the default RestAdapterRequests.
+        """
+        from dbhydro_py.rest_adapters import RestAdapterRequests
+        return cls(RestAdapterRequests(), client_id, client_secret, api_version)
+     
     def _check_api_response(self, response_data: dict, http_status_code: int) -> None:
         """Check API response for errors and raise enhanced DbHydroException if found.
         

@@ -26,6 +26,34 @@ class TestDbHydroApi:
         assert api._client_secret == "test_secret"
         assert "v1" in api.base_url
     
+    def test_with_default_adapter(self):
+        """Test factory method for creating API client with default adapter."""
+        api = DbHydroApi.with_default_adapter(
+            client_id="test_id",
+            client_secret="test_secret"
+        )
+        
+        assert api._client_id == "test_id"
+        assert api._client_secret == "test_secret"
+        assert "v1" in api.base_url
+        # Verify that a RestAdapterRequests instance was created
+        from dbhydro_py.rest_adapters.rest_adapter_requests import RestAdapterRequests
+        assert isinstance(api.rest_adapter, RestAdapterRequests)
+    
+    def test_with_default_adapter_custom_version(self):
+        """Test factory method with custom API version."""
+        api = DbHydroApi.with_default_adapter(
+            client_id="test_id",
+            client_secret="test_secret",
+            api_version=2
+        )
+        
+        assert api._client_id == "test_id"
+        assert api._client_secret == "test_secret"
+        assert "v2" in api.base_url
+        from dbhydro_py.rest_adapters.rest_adapter_requests import RestAdapterRequests
+        assert isinstance(api.rest_adapter, RestAdapterRequests)
+    
     def test_parse_date_datetime_object(self, api_client):
         """Test date parsing with datetime object."""
         dt = datetime(2023, 1, 1, 12, 30, 45, 123000)
