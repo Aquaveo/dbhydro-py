@@ -12,6 +12,14 @@ from dbhydro_py.models.responses.time_series import PeriodOfRecord
 from dbhydro_py.rest_adapters.rest_adapter_base import RestAdapterBase
 from dbhydro_py.utils import dataclass_from_dict
 
+# Get package version dynamically
+try:
+    from importlib.metadata import version
+    __version__ = version('dbhydro-py')
+except ImportError:
+    # Fallback for Python < 3.8 or if package not installed
+    __version__ = 'unknown'
+
 
 class DbHydroApi:
     """Client for interacting with the South Florida Water Management District's DBHydro API.
@@ -270,8 +278,13 @@ class DbHydroApi:
         Returns:
             dict: The raw response data from the GET request.
         """
+        # Add API-specific headers
+        headers = {
+            'User-Agent': f'dbhydro-py/{__version__}'
+        }
+        
         # Make the GET request
-        result = self.rest_adapter.get(endpoint=full_url, params=params)
+        result = self.rest_adapter.get(endpoint=full_url, params=params, headers=headers)
         
         # Check for network-level errors (status_code=0 indicates RequestException from adapter)
         if result.status_code == 0:

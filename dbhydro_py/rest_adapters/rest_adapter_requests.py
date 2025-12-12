@@ -6,13 +6,6 @@ from requests.exceptions import RequestException
 from dbhydro_py.models.transport import Result
 from dbhydro_py.rest_adapters.rest_adapter_base import RestAdapterBase
 
-# Get package version dynamically
-try:
-    from importlib.metadata import version
-    __version__ = version('dbhydro-py')
-except ImportError:
-    # Fallback for Python < 3.8 or if package not installed
-    __version__ = 'unknown'
 
 class RestAdapterRequests(RestAdapterBase):
     """REST adapter implementation using the requests library."""
@@ -76,10 +69,6 @@ class RestAdapterRequests(RestAdapterBase):
             # Set default headers if none provided
             if headers is None:
                 headers = {}
-            
-            # Add User-Agent if not already set
-            if 'User-Agent' not in headers:
-                headers['User-Agent'] = f'dbhydro-py/{__version__}'
             
             response = requests.request(method=http_method, url=endpoint, verify=True, headers=headers, params=endpoint_params, json=data)
             

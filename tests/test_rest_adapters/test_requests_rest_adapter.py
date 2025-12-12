@@ -28,7 +28,10 @@ class TestRestAdapterRequests:
         mock_requests.request.return_value = mock_response
         
         adapter = RestAdapterRequests()
-        result = adapter.get(endpoint="https://api.test.com/test", params={"param1": "value1"})
+        
+        # Test with custom headers
+        custom_headers = {"Custom-Header": "test-value"}
+        result = adapter.get(endpoint="https://api.test.com/test", params={"param1": "value1"}, headers=custom_headers)
         
         assert result.status_code == 200
         assert result.message == "OK"
@@ -42,8 +45,25 @@ class TestRestAdapterRequests:
         assert call_args[1]['verify'] is True
         assert call_args[1]['params'] == {"param1": "value1"}
         assert call_args[1]['json'] is None
-        assert 'User-Agent' in call_args[1]['headers']
-        assert call_args[1]['headers']['User-Agent'].startswith('dbhydro-py/')
+        # Verify headers are passed through correctly
+        assert call_args[1]['headers'] == custom_headers
+    
+    @patch('dbhydro_py.rest_adapters.rest_adapter_requests.requests')
+    def test_get_no_headers(self, mock_requests):
+        """Test GET request with no headers provided."""
+        # Setup mock response
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.reason = "OK"
+        mock_response.json.return_value = {"data": "test"}
+        mock_requests.request.return_value = mock_response
+        
+        adapter = RestAdapterRequests()
+        result = adapter.get(endpoint="https://api.test.com/test")
+        
+        # Verify empty headers dict is used when None provided
+        call_args = mock_requests.request.call_args
+        assert call_args[1]['headers'] == {}
     
     @patch('dbhydro_py.rest_adapters.rest_adapter_requests.requests')
     def test_get_http_error(self, mock_requests):

@@ -171,3 +171,26 @@ class TestDbHydroApi:
         # Should raise DbHydroException for network errors
         with pytest.raises(DbHydroException, match="Request failed: Connection failed"):
             api_client._perform_request("https://test.com/api", {})
+    
+    def test_user_agent_header_added(self, api_client):
+        """Test that User-Agent header is added in API requests."""
+        from dbhydro_py.models.transport import Result
+        
+        # Mock successful response
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK", 
+            data={"timeSeriesResponse": {"status": {"statusCode": 200}}}
+        )
+        
+        # Make a request
+        api_client._perform_request("https://test.com/api", {"param": "value"})
+        
+        # Verify User-Agent header was passed to REST adapter
+        api_client.rest_adapter.get.assert_called_once()
+        call_args = api_client.rest_adapter.get.call_args
+        headers = call_args[1]['headers']
+        
+        assert 'User-Agent' in headers
+        assert headers['User-Agent'].startswith('dbhydro-py/')
+        assert 'unknown' in headers['User-Agent'] or '.' in headers['User-Agent']  # Version format
