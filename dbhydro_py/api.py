@@ -1,4 +1,5 @@
 # Standard library imports
+from collections.abc import Sequence
 from datetime import datetime
 from typing import Literal, cast
 import warnings
@@ -298,7 +299,7 @@ class DbHydroApi:
     
     def get_time_series(
         self,
-        site_ids: list[str],
+        site_ids: Sequence[str] | str,
         date_start: datetime | str,
         date_end: datetime | str,
         calculation: Literal['MEAN', 'MAX', 'MIN', 'SUM'] | None = None,
@@ -309,7 +310,7 @@ class DbHydroApi:
         Retrieve time series data from the DBHydro API using the timeseries endpoint.
         
         Args:
-            site_ids (list[str]): List of site IDs to retrieve data for. E.g., ['S123-R'].
+            site_ids (Sequence[str] | str): Site IDs to retrieve data for. Can be a single string 'S123-R' or sequence ['S123-R', 'S124-R'].
             date_start (datetime | str): Start date. Accepts multiple formats:
                 - datetime object
                 - "YYYY-MM-DD" (time defaults to 00:00:00:000)
@@ -329,12 +330,17 @@ class DbHydroApi:
         endpoint = 'timeseries'
         full_url = f'{self.base_url}{endpoint}'
         
+        # Convert single string to list for uniform processing
+        if isinstance(site_ids, str):
+            site_ids = [site_ids]
+        
+        # Validate that it's actually a sequence
+        if not isinstance(site_ids, Sequence):
+            raise ValueError("The 'site_ids' must be a sequence of strings.")
+        
         # Validate site_ids
         if not site_ids:
-            raise ValueError("The 'site_ids' list cannot be empty.")
-        
-        if not isinstance(site_ids, list):
-            raise ValueError("The 'site_ids' must be a list of strings.")
+            raise ValueError("The 'site_ids' cannot be empty.")
         
         for site_id in site_ids:
             if not isinstance(site_id, str) or not site_id.strip():
@@ -372,7 +378,7 @@ class DbHydroApi:
 
     def get_daily_data(
         self,
-        identifiers: list[str],
+        identifiers: Sequence[str] | str,
         identifier_type: Literal['timeseries', 'station', 'id'],
         date_start: datetime | str,
         date_end: datetime | str,
@@ -383,7 +389,7 @@ class DbHydroApi:
         Retrieve daily data from the DBHydro API using the dailydata endpoint.
         
         Args:
-            identifiers (list[str]): The identifier values based on the identifier_type.
+            identifiers (Sequence[str] | str): The identifier values based on the identifier_type. Can be a single string or sequence.
             identifier_type (Literal['timeseries', 'station', 'id']): The type of identifier provided.
             date_start (datetime | str): Start date. Accepts multiple formats:
                 - datetime object
@@ -404,12 +410,17 @@ class DbHydroApi:
         endpoint = 'dailydata'
         full_url = f'{self.base_url}{endpoint}'
         
+        # Convert single string to list for uniform processing
+        if isinstance(identifiers, str):
+            identifiers = [identifiers]
+        
+        # Validate that it's actually a sequence
+        if not isinstance(identifiers, Sequence):
+            raise ValueError("The 'identifiers' must be a sequence of strings.")
+        
         # validate identifiers
         if not identifiers:
-            raise ValueError("The 'identifiers' list cannot be empty.")
-        
-        if not isinstance(identifiers, list):
-            raise ValueError("The 'identifiers' must be a list of strings.")
+            raise ValueError("The 'identifiers' cannot be empty.")
         
         for identifier in identifiers:
             if not isinstance(identifier, str) or not identifier.strip():
@@ -567,14 +578,14 @@ class DbHydroApi:
 
     def get_real_time(
         self,
-        identifiers: list[str],
+        identifiers: Sequence[str] | str,
         identifier_type: Literal['sites', 'timeseries'],
         status: str | None = None
     ) -> TimeSeriesResponse:
         """Retrieve real-time data from the DBHydro API using the realtime endpoint.
 
         Args:
-            identifiers (list[str]): The identifier values based on the identifier_type.
+            identifiers (Sequence[str] | str): The identifier values based on the identifier_type. Can be a single string or sequence.
             identifier_type (Literal['sites', 'timeseries']): The type of identifier provided.
             status (str | None, optional): Filter by status (optional). Values such as 'A', 'I', 'D'. Note: Has no effect when identifier_type is 'timeseries'.
             
@@ -585,12 +596,17 @@ class DbHydroApi:
         endpoint = 'realtime'
         full_url = f'{self.base_url}{endpoint}'
         
+        # Convert single string to list for uniform processing
+        if isinstance(identifiers, str):
+            identifiers = [identifiers]
+        
+        # Validate that it's actually a sequence
+        if not isinstance(identifiers, Sequence):
+            raise ValueError("The 'identifiers' must be a sequence of strings.")
+        
         # Validate identifiers
         if not identifiers:
-            raise ValueError("The 'identifier' list cannot be empty.")
-        
-        if not isinstance(identifiers, list):
-            raise ValueError("The 'identifiers' must be a list of strings.")
+            raise ValueError("The 'identifiers' cannot be empty.")
         
         for id_value in identifiers:
             if not isinstance(id_value, str) or not id_value.strip():
@@ -657,7 +673,7 @@ class DbHydroApi:
 
     def get_nexrad_pixel_data(
         self,
-        pixel_ids: list[str],
+        pixel_ids: Sequence[str] | str,
         date_start: datetime | str,
         date_end: datetime | str,
         frequency: Literal['H', 'D', 'M', 'Y', 'E'],
@@ -667,7 +683,7 @@ class DbHydroApi:
         Retrieve NEXRAD pixel data from the DBHydro API using the nexrad endpoint.
         
         Args:
-            pixel_ids (list[str]): List of pixel IDs to retrieve data for.
+            pixel_ids (Sequence[str] | str): Pixel IDs to retrieve data for. Can be a single string or sequence.
             date_start (datetime | str): Start date. Accepts multiple formats:
                 - datetime object
                 - "YYYY-MM-DD" (time defaults to 00:00:00:000)
@@ -686,12 +702,17 @@ class DbHydroApi:
         endpoint = 'nexrad'
         full_url = f'{self.base_url}{endpoint}'
         
+        # Convert single string to list for uniform processing
+        if isinstance(pixel_ids, str):
+            pixel_ids = [pixel_ids]
+        
+        # Validate that it's actually a sequence
+        if not isinstance(pixel_ids, Sequence):
+            raise ValueError("The 'pixel_ids' must be a sequence of strings.")
+        
         # Validate pixel_ids
         if len(pixel_ids) == 0:
             raise ValueError("At least one pixel_id must be provided.")
-        
-        if not isinstance(pixel_ids, list):
-            raise ValueError("The 'pixel_ids' must be a list of strings.")
         
         for pixel_id in pixel_ids:
             if not isinstance(pixel_id, str) or not pixel_id.strip():
@@ -728,7 +749,7 @@ class DbHydroApi:
 
     def get_nexrad_polygon_data(
         self,
-        identifiers: list[str],
+        identifiers: Sequence[str] | str,
         identifier_type: Literal['polygonId', 'polygonName'],
         polygon_type: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9],
         date_start: datetime | str,
@@ -740,7 +761,7 @@ class DbHydroApi:
         Retrieve NEXRAD polygon data from the DBHydro API using the nexrad endpoint.
         
         Args:
-            identifiers (list[str]): List of polygon IDs or names to retrieve data for.
+            identifiers (Sequence[str] | str): Polygon IDs or names to retrieve data for. Can be a single string or sequence.
             identifier_type (Literal['polygonId', 'polygonName']): The type of identifiers provided.
             date_start (datetime | str): Start date. Accepts multiple formats:
                 - datetime object
@@ -760,12 +781,17 @@ class DbHydroApi:
         endpoint = 'nexrad'
         full_url = f'{self.base_url}{endpoint}'
         
+        # Convert single string to list for uniform processing
+        if isinstance(identifiers, str):
+            identifiers = [identifiers]
+        
+        # Validate that it's actually a sequence
+        if not isinstance(identifiers, Sequence):
+            raise ValueError("The 'identifiers' must be a sequence of strings.")
+        
         # Validate identifiers
         if len(identifiers) == 0:
             raise ValueError("At least one identifier must be provided.")
-        
-        if not isinstance(identifiers, list):
-            raise ValueError("The 'identifiers' must be a list of strings.")
         
         for identifier in identifiers:
             if not isinstance(identifier, str) or not identifier.strip():
@@ -858,7 +884,7 @@ class DbHydroApi:
     
     def get_synchronize(
         self,
-        time_series_names: list[str],
+        time_series_names: Sequence[str] | str,
         date_start: datetime | str,
         date_end: datetime | str,
         requested_datum: Literal['NGVD29', 'NAVD88'] | None = None
@@ -867,7 +893,7 @@ class DbHydroApi:
         Retrieve data for each unique timestamp for the given time series within the given date range using the synchronize endpoint.
         
         Args:
-            time_series_names (list[str]): List of time series names (station ids).
+            time_series_names (Sequence[str] | str): Time series names (station ids). Can be a single string or sequence.
             date_start (datetime | str): Start date. Accepts multiple formats:
                 - datetime object
                 - "YYYY-MM-DD" (time defaults to 00:00:00:000)
@@ -882,12 +908,17 @@ class DbHydroApi:
         endpoint = 'synchronize'
         full_url = f'{self.base_url}{endpoint}'
         
+        # Convert single string to list for uniform processing
+        if isinstance(time_series_names, str):
+            time_series_names = [time_series_names]
+        
+        # Validate that it's actually a sequence
+        if not isinstance(time_series_names, Sequence):
+            raise ValueError("The 'time_series_names' must be a sequence of strings.")
+        
         # Validate time_series_names
         if not time_series_names:
-            raise ValueError("The 'time_series_names' list cannot be empty.")
-        
-        if not isinstance(time_series_names, list):
-            raise ValueError("The 'time_series_names' must be a list of strings.")
+            raise ValueError("The 'time_series_names' cannot be empty.")
         
         for name in time_series_names:
             if not isinstance(name, str) or not name.strip():

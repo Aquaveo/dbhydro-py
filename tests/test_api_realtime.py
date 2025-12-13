@@ -20,15 +20,17 @@ class TestRealTimeApi:
     
     def test_get_real_time_validation_errors(self, api_client):
         """Test parameter validation in get_real_time."""
-        # Test non-list identifiers parameter
-        with pytest.raises(ValueError, match="The 'identifiers' must be a list of strings"):
+    def test_get_real_time_validation_errors(self, api_client):
+        """Test parameter validation in get_real_time."""
+        # Test non-sequence input (should fail before hitting API)
+        with pytest.raises(ValueError, match="The 'identifiers' must be a sequence of strings"):
             api_client.get_real_time(
-                identifiers="S123-R",  # String instead of list
+                identifiers={"S123-R"},  # Set is not a sequence
                 identifier_type="sites"
             )
         
         # Test empty identifiers list
-        with pytest.raises(ValueError, match="The 'identifier' list cannot be empty"):
+        with pytest.raises(ValueError, match="The 'identifiers' cannot be empty"):
             api_client.get_real_time(
                 identifiers=[],
                 identifier_type="sites"
@@ -122,7 +124,7 @@ class TestRealTimeApi:
     def test_get_real_time_validation_errors(self, api_client):
         """Test parameter validation in get_real_time."""
         # Test empty identifiers list
-        with pytest.raises(ValueError, match="The 'identifier' list cannot be empty."):
+        with pytest.raises(ValueError, match="The 'identifiers' cannot be empty"):
             api_client.get_real_time([], 'sites')
         
         # Test invalid identifier (empty string)

@@ -14,21 +14,72 @@ class TestTimeSeriesEndpoint:
     
     def test_get_time_series_validation_errors(self, api_client):
         """Test parameter validation in get_time_series."""
-        # Test non-list site_ids parameter
-        with pytest.raises(ValueError, match="The 'site_ids' must be a list of strings"):
+        # Test non-sequence input (should fail before hitting API)
+        with pytest.raises(ValueError, match="The 'site_ids' must be a sequence of strings"):
             api_client.get_time_series(
-                site_ids="S123-R",  # String instead of list
+                site_ids={"S123-R"},  # Set is not a sequence
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )
+        
+        with pytest.raises(ValueError, match="The 'site_ids' must be a sequence of strings"):
+            api_client.get_time_series(
+                site_ids={"key": "value"},  # Dict is not a sequence  
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )
+        
+        with pytest.raises(ValueError, match="The 'site_ids' must be a sequence of strings"):
+            api_client.get_time_series(
+                site_ids=123,  # Number is not a sequence
                 date_start="2023-01-01",
                 date_end="2023-01-02"
             )
         
         # Test empty site_ids list
-        with pytest.raises(ValueError, match="The 'site_ids' list cannot be empty"):
+        with pytest.raises(ValueError, match="The 'site_ids' cannot be empty"):
             api_client.get_time_series(
                 site_ids=[],
                 date_start="2023-01-01",
                 date_end="2023-01-02"
             )
+    
+    def test_get_time_series_input_types(self, api_client):
+        """Test that strings and sequences are properly accepted and converted."""
+        from unittest.mock import patch
+        
+        # Mock _perform_request to avoid full API call
+        with patch.object(api_client, '_perform_request') as mock_request:
+            mock_request.return_value = {"timeSeriesResponse": {"success": True, "timeSeries": []}}
+            
+            # Test string input gets converted to list
+            api_client.get_time_series(
+                site_ids="S123-R",  # Single string
+                date_start="2023-01-01", 
+                date_end="2023-01-02"
+            )
+            # Should have been called (meaning validation passed)
+            assert mock_request.called
+            
+            mock_request.reset_mock()
+            
+            # Test list input works
+            api_client.get_time_series(
+                site_ids=["S123-R", "S124-R"],  # List
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )
+            assert mock_request.called
+            
+            mock_request.reset_mock()
+            
+            # Test tuple input works 
+            api_client.get_time_series(
+                site_ids=("S123-R", "S124-R"),  # Tuple
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )
+            assert mock_request.called
         
         # Test invalid site_id (empty string)
         with pytest.raises(ValueError, match="Invalid site ID: ''. Each site ID must be a non-empty string"):

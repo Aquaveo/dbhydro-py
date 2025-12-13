@@ -15,16 +15,8 @@ class TestSynchronizeEndpoint:
     
     def test_get_synchronize_validation_errors(self, api_client):
         """Test parameter validation in get_synchronize."""
-        # Test non-list time_series_names parameter
-        with pytest.raises(ValueError, match="The 'time_series_names' must be a list of strings"):
-            api_client.get_synchronize(
-                time_series_names="S123-R",  # String instead of list
-                date_start="2023-01-01",
-                date_end="2023-01-02"
-            )
-        
         # Test empty time_series_names list
-        with pytest.raises(ValueError, match="The 'time_series_names' list cannot be empty"):
+        with pytest.raises(ValueError, match="The 'time_series_names' cannot be empty"):
             api_client.get_synchronize(
                 time_series_names=[],
                 date_start="2023-01-01",
@@ -121,10 +113,10 @@ class TestSynchronizeEndpoint:
 
     def test_get_synchronize_empty_time_series_names(self, api_client):
         """Test that empty time_series_names raises ValueError."""
-        with pytest.raises(ValueError, match="The 'time_series_names' list cannot be empty"):
+        with pytest.raises(ValueError, match="The 'time_series_names' cannot be empty"):
             api_client.get_synchronize(
                 time_series_names=[],
-                date_start="2023-01-01", 
+                date_start="2023-01-01",
                 date_end="2023-01-02"
             )
 
