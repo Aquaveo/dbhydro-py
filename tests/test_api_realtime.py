@@ -17,6 +17,22 @@ class TestRealTimeApi:
         """Create API client with mocked REST adapter."""
         rest_adapter = Mock()
         return DbHydroApi(rest_adapter, "test_client", "test_secret")
+    
+    def test_get_real_time_validation_errors(self, api_client):
+        """Test parameter validation in get_real_time."""
+        # Test non-list identifiers parameter
+        with pytest.raises(ValueError, match="The 'identifiers' must be a list of strings"):
+            api_client.get_real_time(
+                identifiers="S123-R",  # String instead of list
+                identifier_type="sites"
+            )
+        
+        # Test empty identifiers list
+        with pytest.raises(ValueError, match="The 'identifier' list cannot be empty"):
+            api_client.get_real_time(
+                identifiers=[],
+                identifier_type="sites"
+            )
 
     @pytest.fixture
     def sample_realtime_response(self):

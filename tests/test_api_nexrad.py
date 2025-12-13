@@ -21,6 +21,50 @@ class TestNexradApi:
             client_id="test_client_id",
             client_secret="test_client_secret"
         )
+    
+    def test_get_nexrad_pixel_data_validation_errors(self, api_client):
+        """Test parameter validation in get_nexrad_pixel_data."""
+        # Test non-list pixel_ids parameter
+        with pytest.raises(ValueError, match="The 'pixel_ids' must be a list of strings"):
+            api_client.get_nexrad_pixel_data(
+                pixel_ids="PIXEL123",  # String instead of list
+                date_start="2023-01-01",
+                date_end="2023-01-02",
+                frequency="D"
+            )
+        
+        # Test empty pixel_ids list
+        with pytest.raises(ValueError, match="At least one pixel_id must be provided"):
+            api_client.get_nexrad_pixel_data(
+                pixel_ids=[],
+                date_start="2023-01-01",
+                date_end="2023-01-02",
+                frequency="D"
+            )
+    
+    def test_get_nexrad_polygon_data_validation_errors(self, api_client):
+        """Test parameter validation in get_nexrad_polygon_data."""
+        # Test non-list identifiers parameter
+        with pytest.raises(ValueError, match="The 'identifiers' must be a list of strings"):
+            api_client.get_nexrad_polygon_data(
+                identifiers="POLYGON123",  # String instead of list
+                identifier_type="polygonId",
+                polygon_type=1,
+                date_start="2023-01-01",
+                date_end="2023-01-02",
+                frequency="D"
+            )
+        
+        # Test empty identifiers list
+        with pytest.raises(ValueError, match="At least one identifier must be provided"):
+            api_client.get_nexrad_polygon_data(
+                identifiers=[],
+                identifier_type="polygonId",
+                polygon_type=1,
+                date_start="2023-01-01",
+                date_end="2023-01-02",
+                frequency="D"
+            )
 
     @pytest.fixture
     def sample_nexrad_response(self):

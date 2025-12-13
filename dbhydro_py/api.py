@@ -333,6 +333,9 @@ class DbHydroApi:
         if not site_ids:
             raise ValueError("The 'site_ids' list cannot be empty.")
         
+        if not isinstance(site_ids, list):
+            raise ValueError("The 'site_ids' must be a list of strings.")
+        
         for site_id in site_ids:
             if not isinstance(site_id, str) or not site_id.strip():
                 raise ValueError(f"Invalid site ID: '{site_id}'. Each site ID must be a non-empty string.")
@@ -404,6 +407,9 @@ class DbHydroApi:
         # validate identifiers
         if not identifiers:
             raise ValueError("The 'identifiers' list cannot be empty.")
+        
+        if not isinstance(identifiers, list):
+            raise ValueError("The 'identifiers' must be a list of strings.")
         
         for identifier in identifiers:
             if not isinstance(identifier, str) or not identifier.strip():
@@ -583,6 +589,9 @@ class DbHydroApi:
         if not identifiers:
             raise ValueError("The 'identifier' list cannot be empty.")
         
+        if not isinstance(identifiers, list):
+            raise ValueError("The 'identifiers' must be a list of strings.")
+        
         for id_value in identifiers:
             if not isinstance(id_value, str) or not id_value.strip():
                 raise ValueError(f"Invalid identifier: '{id_value}'. Each identifier must be a non-empty string.")
@@ -681,6 +690,9 @@ class DbHydroApi:
         if len(pixel_ids) == 0:
             raise ValueError("At least one pixel_id must be provided.")
         
+        if not isinstance(pixel_ids, list):
+            raise ValueError("The 'pixel_ids' must be a list of strings.")
+        
         for pixel_id in pixel_ids:
             if not isinstance(pixel_id, str) or not pixel_id.strip():
                 raise ValueError(f"Invalid pixel_id: '{pixel_id}'. Must be a non-empty string.")
@@ -751,6 +763,9 @@ class DbHydroApi:
         # Validate identifiers
         if len(identifiers) == 0:
             raise ValueError("At least one identifier must be provided.")
+        
+        if not isinstance(identifiers, list):
+            raise ValueError("The 'identifiers' must be a list of strings.")
         
         for identifier in identifiers:
             if not isinstance(identifier, str) or not identifier.strip():
@@ -870,6 +885,9 @@ class DbHydroApi:
         # Validate time_series_names
         if not time_series_names:
             raise ValueError("The 'time_series_names' list cannot be empty.")
+        
+        if not isinstance(time_series_names, list):
+            raise ValueError("The 'time_series_names' must be a list of strings.")
         
         for name in time_series_names:
             if not isinstance(name, str) or not name.strip():

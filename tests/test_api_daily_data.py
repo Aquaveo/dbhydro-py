@@ -14,6 +14,15 @@ class TestDailyDataEndpoint:
     
     def test_get_daily_data_validation_errors(self, api_client):
         """Test parameter validation in get_daily_data."""
+        # Test non-list identifiers parameter
+        with pytest.raises(ValueError, match="The 'identifiers' must be a list of strings"):
+            api_client.get_daily_data(
+                identifiers="S123-R",  # String instead of list
+                identifier_type="station",
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )
+        
         # Test empty identifiers list
         with pytest.raises(ValueError, match="The 'identifiers' list cannot be empty."):
             api_client.get_daily_data(

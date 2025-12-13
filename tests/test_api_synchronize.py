@@ -12,6 +12,24 @@ from dbhydro_py.models.transport import Result
 
 class TestSynchronizeEndpoint:
     """Test cases for synchronize endpoint."""
+    
+    def test_get_synchronize_validation_errors(self, api_client):
+        """Test parameter validation in get_synchronize."""
+        # Test non-list time_series_names parameter
+        with pytest.raises(ValueError, match="The 'time_series_names' must be a list of strings"):
+            api_client.get_synchronize(
+                time_series_names="S123-R",  # String instead of list
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )
+        
+        # Test empty time_series_names list
+        with pytest.raises(ValueError, match="The 'time_series_names' list cannot be empty"):
+            api_client.get_synchronize(
+                time_series_names=[],
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )
 
     @pytest.fixture
     def sample_synchronize_response(self):

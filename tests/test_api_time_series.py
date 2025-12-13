@@ -14,6 +14,14 @@ class TestTimeSeriesEndpoint:
     
     def test_get_time_series_validation_errors(self, api_client):
         """Test parameter validation in get_time_series."""
+        # Test non-list site_ids parameter
+        with pytest.raises(ValueError, match="The 'site_ids' must be a list of strings"):
+            api_client.get_time_series(
+                site_ids="S123-R",  # String instead of list
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )
+        
         # Test empty site_ids list
         with pytest.raises(ValueError, match="The 'site_ids' list cannot be empty"):
             api_client.get_time_series(
