@@ -104,6 +104,7 @@ class TestTimeSeriesResponse:
         assert 'site_name' in df_with_meta.columns
         assert 'parameter_name' in df_with_meta.columns
         assert 'unit_code' in df_with_meta.columns
+        assert 'qualifier' in df_with_meta.columns
 
 
 class TestTimeSeriesEntry:

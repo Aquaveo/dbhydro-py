@@ -348,7 +348,7 @@ class TimeSeriesResponse(ApiResponseBase):
             
             # Add metadata columns if requested
             if include_metadata:
-                basic_columns.extend(['site_name', 'parameter_code', 'parameter_name', 'unit_code'])
+                basic_columns.extend(['site_name', 'parameter_code', 'parameter_name', 'unit_code', 'qualifier'])
             
             # Create empty DataFrame with proper column types
             df = pd.DataFrame(columns=basic_columns)
