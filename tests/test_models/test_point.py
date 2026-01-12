@@ -123,7 +123,7 @@ class TestPointModels:
         )
         
         with patch('pandas.DataFrame') as mock_dataframe:
-            df = response.to_dataframe()
+            df = response.to_dataframe(include_metadata=False)
             
             # Verify DataFrame was called with correct data
             mock_dataframe.assert_called_once()
@@ -191,7 +191,7 @@ class TestPointModels:
         )
         
         with patch('pandas.DataFrame') as mock_dataframe:
-            df = response.to_dataframe()
+            df = response.to_dataframe(include_metadata=False)
             
             # Should create empty DataFrame with expected columns
             mock_dataframe.assert_called_once()

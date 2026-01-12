@@ -258,12 +258,12 @@ class TimeSeriesResponse(ApiResponseBase):
         
         return dataclass_from_dict(cls, data)  # type: ignore
     
-    def to_dataframe(self, include_metadata: bool = False) -> 'pd.DataFrame':
+    def to_dataframe(self, include_metadata: bool = True) -> 'pd.DataFrame':
         """Convert time series data to pandas DataFrame.
         
         Args:
-            include_metadata (bool): If True, includes site info and parameter details as columns.
-                                   If False (default), only includes datetime, value, and site_code.
+            include_metadata (bool): If True (default), includes site info and parameter details as columns.
+                                   If False, only includes datetime, value, and site_code.
         
         Returns:
             pd.DataFrame: DataFrame with time series data.

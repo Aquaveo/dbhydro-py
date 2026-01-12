@@ -75,12 +75,12 @@ class PointResponse:
         
         return result
     
-    def to_dataframe(self, include_metadata: bool = False) -> 'pd.DataFrame':
+    def to_dataframe(self, include_metadata: bool = True) -> 'pd.DataFrame':
         """Convert point data to pandas DataFrame.
         
         Args:
-            include_metadata (bool): If True, includes additional metadata columns.
-                                   If False (default), only includes essential columns.
+            include_metadata (bool): If True (default), includes additional metadata columns.
+                                   If False, only includes essential columns.
         
         Returns:
             pd.DataFrame: DataFrame with point data.

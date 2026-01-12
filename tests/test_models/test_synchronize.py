@@ -231,7 +231,7 @@ class TestSynchronizeModels:
         pytest.importorskip("pandas")
         
         response = SynchronizeResponse.from_dict(sample_synchronize_data)
-        df = response.to_dataframe()
+        df = response.to_dataframe(include_metadata=False)
         
         # Check basic structure
         assert len(df) == 4  # 2 stations × 2 timestamps
@@ -269,7 +269,7 @@ class TestSynchronizeModels:
         pytest.importorskip("pandas")
         
         response = SynchronizeResponse.from_dict({})
-        df = response.to_dataframe()
+        df = response.to_dataframe(include_metadata=False)
         
         assert len(df) == 0
         assert list(df.columns) == ['station_id', 'ms_since_epoch', 'value', 'quality_code']

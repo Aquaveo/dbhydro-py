@@ -97,7 +97,7 @@ class TestInterpolateModels:
         response = InterpolateResponse.from_dict(sample_interpolate_data)
         
         try:
-            df = response.to_dataframe()
+            df = response.to_dataframe(include_metadata=False)
             
             assert len(df) == 1
             assert list(df.columns) == ['key', 'value', 'quality_code', 'origin']
@@ -139,7 +139,7 @@ class TestInterpolateModels:
         response = InterpolateResponse.from_dict({"list": []})
         
         try:
-            df = response.to_dataframe()
+            df = response.to_dataframe(include_metadata=False)
             
             assert len(df) == 0
             assert list(df.columns) == ['key', 'value', 'quality_code', 'origin']

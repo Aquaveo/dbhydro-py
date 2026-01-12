@@ -88,7 +88,7 @@ class TestTimeSeriesResponse:
         )
         
         # Test basic DataFrame
-        df = response_with_empty_values.to_dataframe()
+        df = response_with_empty_values.to_dataframe(include_metadata=False)
         
         assert df.empty  # No data rows
         assert len(df.columns) > 0  # But has column structure
