@@ -346,10 +346,6 @@ class TimeSeriesResponse(ApiResponseBase):
                    for ts in self.time_series):
                 basic_columns.append('qualifier')
             
-            # Add metadata columns if requested
-            if include_metadata:
-                basic_columns.extend(['site_name', 'parameter_code', 'parameter_name', 'unit_code', 'qualifier'])
-            
             # Create empty DataFrame with proper column types
             df = pd.DataFrame(columns=basic_columns)
             df = df.astype({
@@ -367,6 +363,12 @@ class TimeSeriesResponse(ApiResponseBase):
             # For single site, can make datetime the index for easier time series analysis
             if len(self.time_series) == 1:
                 df = df.set_index('datetime')
+        
+        # Add metadata columns if requested
+        if include_metadata:
+            for column in ['site_name', 'parameter_code', 'parameter_name', 'unit_code', 'qualifier']:
+                if column not in df.columns:
+                    df[column] = pd.NA
         
         return df
 
