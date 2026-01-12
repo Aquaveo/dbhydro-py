@@ -105,6 +105,70 @@ class TestTimeSeriesResponse:
         assert 'parameter_name' in df_with_meta.columns
         assert 'unit_code' in df_with_meta.columns
         assert 'qualifier' in df_with_meta.columns
+    
+    def test_to_dataframe_all_qualifiers_empty_string(self):
+        """Test DataFrame includes 'qualifier' column when all qualifiers are empty strings."""
+        pytest.importorskip("pandas")
+
+        mock_source_info = Mock()
+        mock_source_info.site_code.value = "S123-R"
+        mock_source_info.site_name = "Test Site"
+
+        mock_parameter = Mock()
+        mock_parameter.parameter_code.value = "62610"
+        mock_parameter.parameter_name = "Groundwater Level"
+        mock_parameter.unit.unit_code = "ft"
+
+        mock_observation = Mock()
+        mock_observation.date_time = "2023-01-01T00:00:00"
+        mock_observation.value = 1.23
+        mock_observation.quality_code = "A"
+        mock_observation.qualifier = ""
+
+        mock_time_series = Mock()
+        mock_time_series.source_info = mock_source_info
+        mock_time_series.parameter = mock_parameter
+        mock_time_series.values = [mock_observation]
+
+        response = TimeSeriesResponse(
+            status=Mock(status_code=200, message="Success", elapsed_time=0.1),
+            time_series=[mock_time_series]
+        )
+
+        df = response.to_dataframe(include_metadata=True)
+        assert 'qualifier' in df.columns
+
+    def test_to_dataframe_all_qualifiers_none(self):
+        """Test DataFrame includes 'qualifier' column when all qualifiers are None."""
+        pytest.importorskip("pandas")
+
+        mock_source_info = Mock()
+        mock_source_info.site_code.value = "S123-R"
+        mock_source_info.site_name = "Test Site"
+
+        mock_parameter = Mock()
+        mock_parameter.parameter_code.value = "62610"
+        mock_parameter.parameter_name = "Groundwater Level"
+        mock_parameter.unit.unit_code = "ft"
+
+        mock_observation = Mock()
+        mock_observation.date_time = "2023-01-01T00:00:00"
+        mock_observation.value = 1.23
+        mock_observation.quality_code = "A"
+        mock_observation.qualifier = None
+
+        mock_time_series = Mock()
+        mock_time_series.source_info = mock_source_info
+        mock_time_series.parameter = mock_parameter
+        mock_time_series.values = [mock_observation]
+
+        response = TimeSeriesResponse(
+            status=Mock(status_code=200, message="Success", elapsed_time=0.1),
+            time_series=[mock_time_series]
+        )
+
+        df = response.to_dataframe(include_metadata=True)
+        assert 'qualifier' in df.columns
 
 
 class TestTimeSeriesEntry:
