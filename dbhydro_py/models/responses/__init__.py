@@ -6,6 +6,7 @@ from .aggregate import AggregateResponse, AggregateInterval, Timespan, Tag
 from .interpolate import InterpolateResponse, InterpolateEntry, InterpolateTag
 from .point import PointResponse, Point
 from .synchronize import SynchronizeResponse, SynchronizeEntry, SynchronizeValue
+from .water_quality import WaterQualityValue, WaterQualityResponse
 
 __all__ = [
     'Status', 
@@ -23,5 +24,7 @@ __all__ = [
     'Point', 
     'SynchronizeResponse', 
     'SynchronizeEntry', 
-    'SynchronizeValue'
+    'SynchronizeValue',
+    'WaterQualityValue',
+    'WaterQualityResponse'
 ]

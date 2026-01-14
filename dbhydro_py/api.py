@@ -10,6 +10,7 @@ from dbhydro_py.models.responses import TimeSeriesResponse, PointResponse, Synch
 from dbhydro_py.models.responses.aggregate import AggregateResponse
 from dbhydro_py.models.responses.interpolate import InterpolateResponse
 from dbhydro_py.models.responses.time_series import PeriodOfRecord
+from dbhydro_py.models.responses.water_quality import WaterQualityResponse
 from dbhydro_py.rest_adapters.rest_adapter_base import RestAdapterBase
 from dbhydro_py.utils import dataclass_from_dict
 
@@ -269,7 +270,7 @@ class DbHydroApi:
             if timespan_value <= 0:
                 raise ValueError(f"Invalid timespan_value: {timespan_value}. Must be a positive integer.")
 
-    def _perform_request(self, full_url: str, params: dict) -> dict:
+    def _perform_request(self, full_url: str, params: dict) -> dict | list:
         """Helper method to perform GET requests using the REST adapter.
         
         Args:
@@ -277,7 +278,7 @@ class DbHydroApi:
             params (dict): The query parameters for the request.
             
         Returns:
-            dict: The raw response data from the GET request.
+            dict | list: The raw response data from the GET request.
         """
         # Add API-specific headers
         headers = {
@@ -954,20 +955,20 @@ class DbHydroApi:
     
     def get_water_quality(
         self,
-        project_code: str | None = None,
-        test_number: int | None = None,
-        station: str | None = None,
+        project_codes: list[str] | str | None = None,
+        test_numbers: list[int | str] | int | str | None = None,
+        stations: list[str] | str | None = None,
         date_start: datetime | str | None = None,
         date_end: datetime | str | None = None,
         exclude_flagged_results: bool = False
-    ) -> None:
+    ) -> WaterQualityResponse:
         """
         Retrieve water quality data from the DBHydro API using the waterquality endpoint.
         
         Args:
-            project_code (str | None, optional): The project code to filter results. Ex: '8SQM'
-            test_number (int | None, optional): The test number to filter results. Ex: 7
-            station (str | None, optional): The station ID to filter results. Ex: G211
+            project_codes (list[str] | str | None, optional): The project code(s) to filter results. Ex: ['8SQM']
+            test_numbers (list[int | str] | int | str | None, optional): The test number(s) to filter results. Ex: [7]
+            stations (list[str] | str | None, optional): The station ID(s) to filter results. Ex: ['G211']
             date_start (datetime | str | None, optional): Start date. Accepts multiple formats:
                 - datetime object
                 - "YYYY-MM-DD" (time defaults to 00:00:00:000)
@@ -979,28 +980,69 @@ class DbHydroApi:
             exclude_flagged_results (bool, optional): Whether to exclude flagged results. Default is False.
             
         Returns:
-            None: Placeholder for actual response model once defined.
+            WaterQualityResponse: The response model containing water quality data.
         """
         
         # Build the request URL
-        endpoint = 'waterquality'
+        endpoint = 'waterquality/results'
         full_url = f'{self.base_url}{endpoint}'
         
+        # Validate search parameters
+        has_project_code = False
+        has_test_number = False
+        has_station = False
+        
+        if project_codes is not None:
+            # Convert single string to list for uniform processing
+            if isinstance(project_codes, str):
+                project_codes = [project_codes]
+            elif not isinstance(project_codes, list):
+                raise ValueError("project_codes must be a string or a list of strings.")
+            
+            # Validate project_codes
+            if len(project_codes) == 0:
+                raise ValueError("If provided, project_codes must contain at least one value.")
+            
+            has_project_code = True
+        
+        if test_numbers is not None:
+            # Convert single int to list for uniform processing
+            if isinstance(test_numbers, int) or isinstance(test_numbers, str):
+                test_numbers = [test_numbers]
+            elif not isinstance(test_numbers, list):
+                raise ValueError('test_numbers must be an integer or a list of integers.')
+            
+            # Validate test_numbers
+            if len(test_numbers) == 0:
+                raise ValueError('If provided, test_numbers must contain at least one value.')
+
+            for test_number in test_numbers:
+                # Check if each test_number is an integer or a string representation of an integer
+                if not isinstance(test_number, int) and not (isinstance(test_number, str) and test_number.isdigit()):
+                    raise ValueError('Each test number must be an integer.')
+            
+            has_test_number = True
+        
+        if stations is not None:
+            # Convert single string to list for uniform processing
+            if isinstance(stations, str):
+                stations = [stations]
+            elif not isinstance(stations, list):
+                raise ValueError('stations must be a string or a list of strings.')
+
+            # Validate stations
+            if len(stations) == 0:
+                raise ValueError('If provided, stations must contain at least one value.')
+            
+            has_station = True
+        
         # Validate at least one search parameter is provided
-        has_project_code = project_code and project_code.strip()
-        has_test_number = test_number is not None
-        has_station = station and station.strip()
-        
         if not any([has_project_code, has_test_number, has_station]):
-            raise ValueError("At least one search parameter is required: project_code, test_number, or station")
-        
-        # Validate test_number parameter if provided
-        if test_number is not None and not isinstance(test_number, int):
-            raise ValueError("test_number must be an integer")
+            raise ValueError('At least one search parameter is required: project_codes, test_numbers, or stations.')
         
         # Date validation (both required if either provided)
         if (date_start is None) != (date_end is None):
-            raise ValueError("Both date_start and date_end must be provided together")
+            raise ValueError('Both date_start and date_end must be provided together')
         
         datetime_start, datetime_end = self._handle_date_parameters(date_start, date_end) if date_start and date_end else (None, None)
         
@@ -1008,18 +1050,17 @@ class DbHydroApi:
         params = {
             'client_id': self._client_id,
             'client_secret': self._client_secret,
-            'format': 'json'
         }
         
         # Add optional parameters
-        if project_code:
-            params['projectCode'] = project_code
+        if project_codes:
+            params['projectCode'] = ','.join(project_codes)
         
-        if test_number is not None:
-            params['testNumber'] = str(test_number)
+        if test_numbers:
+            params['testNumber'] = ','.join(map(str, test_numbers))
         
-        if station:
-            params['station'] = station
+        if stations:
+            params['station'] = ','.join(stations)
         
         if datetime_start and datetime_end:
             params['beginDateTime'] = datetime_start
@@ -1028,10 +1069,9 @@ class DbHydroApi:
         if exclude_flagged_results:
             params['excludeFlaggedResults'] = 'Y' if exclude_flagged_results else 'N'
         
-        # Raise NotImplementedError as this endpoint doesn't seem to properly validate client credentials
-        raise NotImplementedError("The waterquality endpoint is not currently implemented due to API credential validation issues.")
+        # Make the request using the helper
+        response_data = self._perform_request(full_url, params)
         
-        
-        
-        
-        
+        # Extract the water quality response
+        water_quality_data = {'values': response_data}
+        return WaterQualityResponse.from_dict(water_quality_data)
