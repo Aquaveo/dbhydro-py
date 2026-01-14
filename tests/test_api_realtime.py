@@ -6,6 +6,7 @@ from datetime import datetime
 
 from dbhydro_py.api import DbHydroApi
 from dbhydro_py.models.responses import TimeSeriesResponse
+from dbhydro_py.models.transport.result import Result
 from dbhydro_py.exceptions import DbHydroException
 
 
@@ -433,3 +434,22 @@ class TestRealTimeApi:
         assert len(response.time_series) == 1
         assert response.time_series[0].current_status == "I"
         assert len(response.time_series[0].values) == 0  # No current values
+
+    def test_get_real_time_api_list_returned(self, api_client):
+        """Test real-time data endpoint handling when API returns a list instead of dict."""
+        # Mock invalid response (list instead of dict)
+        invalid_response = []
+        
+        # Setup mock
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK",
+            data=invalid_response
+        )
+        
+        # Make request and expect DbHydroException
+        with pytest.raises(DbHydroException, match="Unexpected response format from real-time data endpoint. | HTTP Status: 200"):
+            api_client.get_real_time(
+                identifiers=["SITE001"],
+                identifier_type="sites"
+            )

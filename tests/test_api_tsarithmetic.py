@@ -6,6 +6,7 @@ from unittest.mock import Mock
 
 from dbhydro_py.api import DbHydroApi
 from dbhydro_py.models.responses.point import PointResponse
+from dbhydro_py.models.transport.result import Result
 from dbhydro_py.exceptions import DbHydroException
 
 
@@ -327,3 +328,22 @@ class TestTimeSeriesArithmeticApi:
             call_args = api_client.rest_adapter.get.call_args
             actual_timestamp = call_args[1]['params']['timestamp']
             assert actual_timestamp == expected_format, f"Failed for input: {input_date}"
+
+    def test_get_time_series_arithmetic_api_list_returned(self, api_client):
+        """Test time series arithmetic endpoint handling when API returns a list instead of dict."""
+        # Mock invalid response (list instead of dict)
+        invalid_response = []
+        
+        # Setup mock
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK",
+            data=invalid_response
+        )
+        
+        # Make request and expect DbHydroException
+        with pytest.raises(DbHydroException, match="Unexpected response format from time series arithmetic endpoint. | HTTP Status: 200"):
+            api_client.get_time_series_arithmetic(
+                id="TS001",
+                timestamp="2023-01-01"
+            )

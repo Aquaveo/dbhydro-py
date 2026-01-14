@@ -117,3 +117,22 @@ class TestInterpolateEndpoint:
         api_client.rest_adapter.get.assert_called_once()
         call_args = api_client.rest_adapter.get.call_args
         assert call_args is not None
+
+    def test_get_interpolate_api_list_returned(self, api_client):
+        """Test interpolate endpoint handling when API returns a list instead of dict."""
+        # Mock invalid response (list instead of dict)
+        invalid_response = []
+        
+        # Setup mock
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK",
+            data=invalid_response
+        )
+        
+        # Make request and expect DbHydroException
+        with pytest.raises(DbHydroException, match="Unexpected response format from interpolate endpoint. | HTTP Status: 200"):
+            api_client.get_interpolate(
+                station_id="SITE001",
+                date_time="2023-01-01 12:00"
+            )

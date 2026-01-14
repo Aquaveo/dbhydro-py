@@ -3,6 +3,7 @@
 import pytest
 from datetime import datetime
 
+from dbhydro_py.exceptions import DbHydroException
 from dbhydro_py.models.transport import Result
 
 
@@ -429,3 +430,24 @@ class TestWaterQualityEndpoint:
         assert response is not None
         assert hasattr(response, "values")
         api_client.rest_adapter.get.assert_called_once()
+
+    def test_get_water_quality_api_dict_returned(self, api_client):
+        """Test water quality endpoint handling when API returns a dict instead of list."""
+        # Mock invalid response (dict instead of list)
+        invalid_response = {}
+        
+        # Setup mock
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK",
+            data=invalid_response
+        )
+        
+        # Make request and expect DbHydroException
+        with pytest.raises(DbHydroException, match="Unexpected response format from water quality endpoint. | HTTP Status: 200"):
+            api_client.get_water_quality(
+                project_codes=["PROJ001"],
+                stations=["STATION001"],
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )

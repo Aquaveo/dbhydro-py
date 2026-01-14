@@ -195,3 +195,24 @@ class TestDailyDataEndpoint:
         api_client.rest_adapter.get.assert_called_once()
         call_args = api_client.rest_adapter.get.call_args
         assert call_args is not None
+
+    def test_get_daily_data_api_list_returned(self, api_client):
+        """Test daily data endpoint handling when API returns a list instead of dict."""
+        # Mock invalid response (list instead of dict)
+        invalid_response = []
+        
+        # Setup mock
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK",
+            data=invalid_response
+        )
+        
+        # Make request and expect DbHydroException
+        with pytest.raises(DbHydroException, match="Unexpected response format from daily data endpoint. | HTTP Status: 200"):
+            api_client.get_daily_data(
+                identifiers=["SITE001"],
+                identifier_type="station",
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )

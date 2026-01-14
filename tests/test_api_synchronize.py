@@ -288,3 +288,23 @@ class TestSynchronizeEndpoint:
             params = call_args.kwargs["params"]
             assert params["beginDateTime"] == expected_output
             assert params["endDateTime"] == expected_output
+
+    def test_get_synchronize_api_list_returned(self, api_client):
+        """Test synchronize endpoint handling when API returns a list instead of dict."""
+        # Mock invalid response (list instead of dict)
+        invalid_response = []
+        
+        # Setup mock
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK",
+            data=invalid_response
+        )
+        
+        # Make request and expect DbHydroException
+        with pytest.raises(DbHydroException, match="Unexpected response format from synchronize endpoint. | HTTP Status: 200"):
+            api_client.get_synchronize(
+                time_series_names=["S6-H"],
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )

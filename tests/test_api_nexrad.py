@@ -550,3 +550,47 @@ class TestNexradApi:
                 date_end="2023-01-02",
                 frequency="H"
             )
+    
+    def test_get_nexrad_polygon_api_list_returned(self, api_client):
+        """Test NEXRAD polygon endpoint handling when API returns a list instead of dict."""
+        # Mock invalid response (list instead of dict)
+        invalid_response = []
+        
+        # Setup mock
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK",
+            data=invalid_response
+        )
+        
+        # Make request and expect DbHydroException
+        with pytest.raises(DbHydroException, match="Unexpected response format from nexrad polygon endpoint. | HTTP Status: 200"):
+            api_client.get_nexrad_polygon_data(
+                identifiers=["POLYGON-123"],
+                identifier_type="polygonId",
+                polygon_type=1,
+                date_start="2023-01-01",
+                date_end="2023-01-02",
+                frequency="H"
+            )
+
+    def test_get_nexrad_pixel_api_list_returned(self, api_client):
+        """Test NEXRAD pixel endpoint handling when API returns a list instead of dict."""
+        # Mock invalid response (list instead of dict)
+        invalid_response = []
+        
+        # Setup mock
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK",
+            data=invalid_response
+        )
+        
+        # Make request and expect DbHydroException
+        with pytest.raises(DbHydroException, match="Unexpected response format from nexrad pixel endpoint. | HTTP Status: 200"):
+            api_client.get_nexrad_pixel_data(
+                pixel_ids=["PIXEL-123"],
+                date_start="2023-01-01",
+                date_end="2023-01-02",
+                frequency="H"
+            )

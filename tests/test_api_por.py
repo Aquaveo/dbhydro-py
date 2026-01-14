@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 from dbhydro_py.api import DbHydroApi
 from dbhydro_py.exceptions import DbHydroException
 from dbhydro_py.models.responses.time_series import PeriodOfRecord
+from dbhydro_py.models.transport.result import Result
 
 
 class TestApiPeriodOfRecord:
@@ -277,3 +278,19 @@ class TestApiPeriodOfRecord:
         assert 'station_id' in sig.parameters
         assert sig.parameters['station_id'].annotation == str
         assert sig.return_annotation == PeriodOfRecord
+
+    def test_get_period_of_record_api_list_returned(self, api_client):
+        """Test period of record endpoint handling when API returns a list instead of dict."""
+        # Mock invalid response (list instead of dict)
+        invalid_response = []
+        
+        # Setup mock
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK",
+            data=invalid_response
+        )
+        
+        # Make request and expect DbHydroException
+        with pytest.raises(DbHydroException, match="Unexpected response format from period of record endpoint. | HTTP Status: 200"):
+            api_client.get_period_of_record("SITE001")

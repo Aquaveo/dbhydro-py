@@ -373,6 +373,13 @@ class DbHydroApi:
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
         
+        # Validate that response type is a dict
+        if not isinstance(response_data, dict):
+            raise DbHydroException(
+                message="Unexpected response format from timeseries endpoint.",
+                http_status_code=200
+            )
+        
         # Extract the time series response
         time_series_data = response_data.get('timeSeriesResponse', {})
         return TimeSeriesResponse.from_dict(time_series_data)
@@ -464,6 +471,13 @@ class DbHydroApi:
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
         
+        # Validate that response type is a dict
+        if not isinstance(response_data, dict):
+            raise DbHydroException(
+                message="Unexpected response format from daily-data endpoint.",
+                http_status_code=200
+            )
+        
         # Extract the time series response (same structure as regular timeseries)
         time_series_data = response_data.get('timeSeriesResponse', {})
         return TimeSeriesResponse.from_dict(time_series_data)
@@ -532,6 +546,13 @@ class DbHydroApi:
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
         
+        # Validate that response type is a dict
+        if not isinstance(response_data, dict):
+            raise DbHydroException(
+                message="Unexpected response format from aggregate endpoint.",
+                http_status_code=200
+            )
+        
         # Return the aggregate response directly
         return AggregateResponse.from_dict(response_data)
 
@@ -573,6 +594,13 @@ class DbHydroApi:
         
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
+        
+        # Validate that response type is a dict
+        if not isinstance(response_data, dict):
+            raise DbHydroException(
+                message="Unexpected response format from interpolate endpoint.",
+                http_status_code=200
+            )
         
         # Return the interpolate response directly
         return InterpolateResponse.from_dict(response_data)
@@ -633,6 +661,13 @@ class DbHydroApi:
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
         
+        # Validate that response type is a dict
+        if not isinstance(response_data, dict):
+            raise DbHydroException(
+                message="Unexpected response format from real-time endpoint.",
+                http_status_code=200
+            )
+        
         # Extract the time series response
         time_series_data = response_data.get('timeSeriesResponse', {})
         return TimeSeriesResponse.from_dict(time_series_data)
@@ -667,6 +702,13 @@ class DbHydroApi:
         
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
+        
+        # Validate that response type is a dict
+        if not isinstance(response_data, dict):
+            raise DbHydroException(
+                message="Unexpected response format from por endpoint.",
+                http_status_code=200
+            )
         
         # Extract the period of record response
         por_data = response_data.get('periodOfRecord', {})
@@ -743,6 +785,13 @@ class DbHydroApi:
         
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
+        
+        # Validate that response type is a dict
+        if not isinstance(response_data, dict):
+            raise DbHydroException(
+                message="Unexpected response format from nexrad pixel endpoint.",
+                http_status_code=200
+            )
         
         # Extract and return the NEXRAD pixel data
         time_series_data = response_data.get('timeSeriesResponse', {})
@@ -831,6 +880,13 @@ class DbHydroApi:
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
         
+        # Validate that response type is a dict
+        if not isinstance(response_data, dict):
+            raise DbHydroException(
+                message="Unexpected response format from nexrad polygon endpoint.",
+                http_status_code=200
+            )
+        
         # Extract and return the NEXRAD polygon data
         time_series_data = response_data.get('timeSeriesResponse', {})
         return TimeSeriesResponse.from_dict(time_series_data)
@@ -878,6 +934,13 @@ class DbHydroApi:
         
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
+        
+        # Validate that response type is a dict
+        if not isinstance(response_data, dict):
+            raise DbHydroException(
+                message="Unexpected response format from tsarithmetic endpoint.",
+                http_status_code=200
+            )
         
         # Extract the point response
         point_data = response_data.get('pointResponse', {})
@@ -949,6 +1012,13 @@ class DbHydroApi:
         
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
+        
+        # Validate that response type is a dict
+        if not isinstance(response_data, dict):
+            raise DbHydroException(
+                message="Unexpected response format from synchronize endpoint.",
+                http_status_code=200
+            )
         
         # Return the synchronize response
         return SynchronizeResponse.from_dict(response_data)
@@ -1071,6 +1141,13 @@ class DbHydroApi:
         
         # Make the request using the helper
         response_data = self._perform_request(full_url, params)
+        
+        # Validate that response type is a list
+        if not isinstance(response_data, list):
+            raise DbHydroException(
+                message="Unexpected response format from water quality endpoint.",
+                http_status_code=200
+            )
         
         # Extract the water quality response
         water_quality_data = {'values': response_data}

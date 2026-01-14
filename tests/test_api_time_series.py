@@ -177,3 +177,23 @@ class TestTimeSeriesEndpoint:
             # Verify response is returned successfully
             assert response is not None
             assert hasattr(response, 'time_series')
+
+    def test_get_time_series_api_list_returned(self, api_client):
+        """Test time series endpoint handling when API returns a list instead of dict."""
+        # Mock invalid response (list instead of dict)
+        invalid_response = []
+        
+        # Setup mock
+        api_client.rest_adapter.get.return_value = Result(
+            status_code=200,
+            message="OK",
+            data=invalid_response
+        )
+        
+        # Make request and expect DbHydroException
+        with pytest.raises(DbHydroException, match="Unexpected response format from time series endpoint. | HTTP Status: 200"):
+            api_client.get_time_series(
+                site_ids=["SITE001"],
+                date_start="2023-01-01",
+                date_end="2023-01-02"
+            )
