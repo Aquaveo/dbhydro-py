@@ -184,6 +184,15 @@ response = client.get_nexrad_polygon_data(
 )
 ```
 
+### Timeseries Arithmetic
+
+```python
+response = client.get_time_series_arithmetic(
+    id='WZ687',
+    timestamp='2024-06-15'
+)
+```
+
 ### Synchronized Data
 
 ```python
