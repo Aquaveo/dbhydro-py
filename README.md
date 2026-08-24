@@ -133,6 +133,14 @@ response = client.get_real_time(
 )
 ```
 
+### Period of Record
+
+```python
+response = client.get_period_of_record(
+    station_id='S123-R'
+)
+```
+
 ### Aggregate Statistics
 
 ```python
