@@ -204,6 +204,19 @@ response = client.get_synchronize(
 )
 ```
 
+### Water Quality Data
+
+```python
+response = client.get_water_quality(
+    project_codes=['8SQM'],
+    test_numbers=[7],
+    stations=['G211'],
+    date_start='2001-09-2500:00:00:000',
+    date_end='2001-09-2600:00:00:000',
+    exclude_flagged_results=False
+)
+```
+
 ## Date Format Support
 
 The library accepts multiple date formats:
